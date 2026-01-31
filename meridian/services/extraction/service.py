@@ -10,6 +10,12 @@ from spacy.tokens import Doc
 
 from meridian.config.logging import get_logger
 from meridian.core.models import ExtractedEntity, ExtractionResult
+from meridian.services.extraction.matchers import (
+    build_phrase_matcher,
+    find_phrase_spans,
+    find_postcode_spans,
+    merge_spans,
+)
 
 logger = get_logger(__name__)
 
@@ -24,28 +30,38 @@ class EntityExtractor:
         Initialise the extractor.
 
         Args:
-            nlp: Optional spaCy Language model. If not provided,
+            nlp: Optional spaCy language model. If not provided,
                  loads a blank English model.
         """
         if nlp is None:
             nlp = spacy.blank("en")
         self._nlp = nlp
-        self._setup_matchers()
-
-    def _setup_matchers(self) -> None:
-        """
-        Set up entity matchers.
-        """
-        # TODO: Add PhraseMatcher for LOCAL_AUTHORITY
-        # TODO: Add PhraseMatcher for REGION
-        # TODO: Add Matcher patterns for POSTCODE_AREA
+        self._phrase_matcher = build_phrase_matcher(nlp)
 
     @property
     def nlp(self) -> Language:
         """
         Return the spaCy language model.
+
+        Returns:
+            spaCy language model.
         """
         return self._nlp
+
+    def _apply_matchers(self, doc: Doc) -> Doc:
+        """
+        Run matchers and set doc.ents.
+
+        Args:
+            doc: Input spaCy document.
+
+        Returns:
+            Processed spaCy document with entities.
+        """
+        spans = find_phrase_spans(doc, self._phrase_matcher)
+        spans.extend(find_postcode_spans(doc))
+        doc.ents = merge_spans(spans)
+        return doc
 
     def extract(self, text: str) -> ExtractionResult:
         """
@@ -58,19 +74,16 @@ class EntityExtractor:
             ExtractionResult with extracted entities.
         """
         doc = self._nlp(text)
+        doc = self._apply_matchers(doc)
         entities = self._extract_from_doc(doc)
-
-        return ExtractionResult(
-            text=text,
-            entities=entities,
-        )
+        return ExtractionResult(text=text, entities=entities)
 
     def _extract_from_doc(self, doc: Doc) -> list[ExtractedEntity]:
         """
-        Extract entities from a processed spaCy Doc.
+        Convert doc.ents to ExtractedEntity list.
 
         Args:
-            doc: Processed spaCy document.
+            doc: Input spaCy document.
 
         Returns:
             List of extracted entities.
@@ -90,26 +103,23 @@ class EntityExtractor:
         Extract entities from multiple texts.
 
         Args:
-            texts: List of input texts.
+            texts: List of input texts to process.
 
         Returns:
-            List of extraction results.
+            List of ExtractionResults with extracted entities.
         """
-        results = []
-        for doc in self._nlp.pipe(texts):
-            entities = self._extract_from_doc(doc)
-            results.append(
-                ExtractionResult(
-                    text=doc.text,
-                    entities=entities,
-                )
-            )
-        return results
+        return [
+            ExtractionResult(text=doc.text, entities=self._extract_from_doc(doc))
+            for doc in (self._apply_matchers(doc) for doc in self._nlp.pipe(texts))
+        ]
 
 
 @lru_cache(maxsize=1)
 def get_extractor() -> EntityExtractor:
     """
     Get the extractor instance.
+
+    Returns:
+        EntityExtractor instance.
     """
     return EntityExtractor()
