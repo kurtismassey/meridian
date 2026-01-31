@@ -6,13 +6,13 @@ import asyncio
 
 from fastapi import APIRouter
 
-from meridian.config.logging import get_logger
-from meridian.core.models import (
+from meridian.api.models import (
     ExtractBatchRequest,
-    ExtractionResult,
     ExtractRequest,
     HealthResponse,
 )
+from meridian.config.logging import get_logger
+from meridian.core.models import ExtractionResult
 from meridian.services.extraction import get_extractor
 
 logger = get_logger(__name__)
