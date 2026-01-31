@@ -3,13 +3,14 @@ API routes.
 """
 
 import asyncio
+
 from fastapi import APIRouter
 
 from meridian.config.logging import get_logger
 from meridian.core.models import (
     ExtractBatchRequest,
-    ExtractRequest,
     ExtractionResult,
+    ExtractRequest,
     HealthResponse,
 )
 from meridian.services.extraction import get_extractor
