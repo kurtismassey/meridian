@@ -1,5 +1,6 @@
 # Meridian
 
+![CI](https://github.com/kurtismassey/meridian/actions/workflows/ci.yml/badge.svg)
 ![Status](https://img.shields.io/badge/status-work%20in%20progress-yellow)
 
 UK Local Authority Named Entity Recognition system using spaCy.

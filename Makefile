@@ -1,4 +1,4 @@
-.PHONY: install install-dev dev test
+.PHONY: install dev lint typecheck test
 
 install:
 	@echo "Installing dependencies..."
@@ -7,6 +7,14 @@ install:
 dev:
 	@echo "Starting Meridian API..."
 	@uv run fastapi dev meridian/main.py
+
+lint:
+	@echo "Running ruff..."
+	@uv run ruff check . && uv run ruff format --check .
+
+typecheck:
+	@echo "Running mypy..."
+	@uv run mypy meridian
 
 test:
 	@echo "Running tests..."
