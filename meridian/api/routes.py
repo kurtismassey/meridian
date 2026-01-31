@@ -2,6 +2,7 @@
 API routes.
 """
 
+import asyncio
 from fastapi import APIRouter
 
 from meridian.config.logging import get_logger
@@ -37,7 +38,7 @@ async def extract_entities(request: ExtractRequest) -> ExtractionResult:
     - POSTCODE_AREA: UK postcode areas (e.g., "M1", "SW1A")
     """
     extractor = get_extractor()
-    result = extractor.extract(request.text)
+    result = await asyncio.to_thread(extractor.extract, request.text)
     logger.info("Extracted %d entities", len(result.entities))
     return result
 
@@ -50,6 +51,6 @@ async def extract_entities_batch(
     Extract named entities from multiple texts.
     """
     extractor = get_extractor()
-    results = extractor.extract_batch(request.texts)
+    results = await asyncio.to_thread(extractor.extract_batch, request.texts)
     logger.info("Processed %d texts", len(results))
     return results
