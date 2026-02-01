@@ -8,18 +8,20 @@ from collections.abc import AsyncGenerator, Awaitable, Callable
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
-
-from meridian.api.routes import router
 from meridian.config.logging import get_logger, setup_logging
+
+from api.routes import router
+from meridian import Meridian
 
 logger = get_logger(__name__)
 
 
 @asynccontextmanager
-async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Initialise."""
     setup_logging()
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    app.state.meridian = Meridian()
     logger.info("Meridian API started")
     yield
     logger.info("Meridian API stopped")
@@ -27,14 +29,14 @@ async def lifespan(_app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(
     title="Meridian",
-    description="Named Entity Recognition API",
+    description="Meridian API",
     version="0.1.0",
     lifespan=lifespan,
 )
 
 
 @app.middleware("http")
-async def new_request(
+async def log_request(
     request: Request,
     call_next: Callable[[Request], Awaitable[Response]],
 ) -> Response:

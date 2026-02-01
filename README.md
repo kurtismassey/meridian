@@ -3,7 +3,7 @@
 ![CI](https://github.com/kurtismassey/meridian/actions/workflows/ci.yml/badge.svg)
 ![Status](https://img.shields.io/badge/status-work%20in%20progress-yellow)
 
-UK Local Authority Named Entity Recognition system using spaCy.
+UK location NER library (local authority, region, postcode).
 
 ## Overview
 
@@ -22,25 +22,25 @@ uv sync --extra dev  # For development dependencies
 
 ## Usage
 
-### API
-
-```bash
-uv run fastapi dev meridian/main.py
-```
-
-Then visit http://localhost:8000/docs for the API documentation.
-
-### Python
+### Library
 
 ```python
-from meridian.services.extraction import get_extractor
+from meridian import Meridian
 
-extractor = get_extractor()
-
-result = extractor.extract("Contact Manchester City Council about council tax")
+meridian = Meridian()
+result = meridian.recognise("Contact Manchester City Council about council tax")
 for entity in result.entities:
     print(f"{entity.text} -> {entity.label}")
 ```
+
+### API
+
+```bash
+uv sync --extra server   # or --extra dev
+uv run fastapi dev api/main.py
+```
+
+Then visit http://localhost:8000/docs.
 
 ## Development
 

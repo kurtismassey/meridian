@@ -706,32 +706,44 @@ name = "meridian"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "fastapi", extra = ["standard"] },
+    { name = "httpx" },
     { name = "pandas" },
     { name = "pydantic" },
+    { name = "pydantic-settings" },
     { name = "spacy" },
 ]
 
 [package.optional-dependencies]
 dev = [
+    { name = "fastapi", extra = ["standard"] },
     { name = "mypy" },
     { name = "pytest" },
     { name = "pytest-cov" },
+    { name = "rich" },
     { name = "ruff" },
+]
+server = [
+    { name = "fastapi", extra = ["standard"] },
+    { name = "rich" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.100.0" },
+    { name = "fastapi", extras = ["standard"], marker = "extra == 'dev'", specifier = ">=0.100.0" },
+    { name = "fastapi", extras = ["standard"], marker = "extra == 'server'", specifier = ">=0.100.0" },
+    { name = "httpx", specifier = ">=0.27.0" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.13.0" },
     { name = "pandas", specifier = ">=2.0.0" },
     { name = "pydantic", specifier = ">=2.0.0" },
+    { name = "pydantic-settings", specifier = ">=2.0.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.0.0" },
+    { name = "rich", marker = "extra == 'dev'", specifier = ">=13.0.0" },
+    { name = "rich", marker = "extra == 'server'", specifier = ">=13.0.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.8.0" },
     { name = "spacy", specifier = ">=3.7.0" },
 ]
-provides-extras = ["dev"]
+provides-extras = ["dev", "server"]
 
 [[package]]
 name = "murmurhash"

@@ -3,22 +3,24 @@ Pytest config and shared fixtures.
 """
 
 import pytest
+from api.main import app
 from fastapi.testclient import TestClient
-from meridian.main import app
-from meridian.services.extraction import EntityExtractor
+
+from meridian import Meridian
 
 
 @pytest.fixture
-def extractor() -> EntityExtractor:
+def meridian() -> Meridian:
     """
-    EntityExtractor instance.
+    Meridian instance for extraction tests.
     """
-    return EntityExtractor()
+    return Meridian()
 
 
 @pytest.fixture
 def client() -> TestClient:
     """
-    FastAPI test client.
+    FastAPI test client (app.state.meridian set so routes work without lifespan).
     """
+    app.state.meridian = Meridian()
     return TestClient(app)

@@ -6,6 +6,7 @@ from spacy.language import Language
 from spacy.matcher import PhraseMatcher
 from spacy.tokens import Doc, Span
 
+from meridian.core.models import MeridianLabel
 from meridian.services.extraction.gazetteer.loader import load_gazetteer
 from meridian.services.extraction.patterns.postcode import find_postcode_matches
 
@@ -30,7 +31,7 @@ def _char_range_to_span(doc: Doc, start_char: int, end_char: int) -> Span | None
             end_tok = token.i + 1
             break
     if start_tok is not None and end_tok is not None:
-        return Span(doc, start_tok, end_tok, label="POSTCODE_AREA")
+        return Span(doc, start_tok, end_tok, label=MeridianLabel.POSTCODE_AREA.value)
     return None
 
 
@@ -48,8 +49,8 @@ def build_phrase_matcher(nlp: Language) -> PhraseMatcher:
     gazetteer = load_gazetteer()
     la_docs = list(nlp.pipe(row.name for row in gazetteer.local_authorities))
     rgn_docs = list(nlp.pipe(row.name for row in gazetteer.regions))
-    matcher.add("LOCAL_AUTHORITY", la_docs)
-    matcher.add("REGION", rgn_docs)
+    matcher.add(MeridianLabel.LOCAL_AUTHORITY.value, la_docs)
+    matcher.add(MeridianLabel.REGION.value, rgn_docs)
     return matcher
 
 
