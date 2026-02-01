@@ -8,6 +8,7 @@ dependencies = [
     "spacy>=3.7.0",
     "fastapi[standard]>=0.100.0",
     "pydantic>=2.0.0",
+    "pandas>=2.0.0",
 ]
 
 [project.optional-dependencies]
@@ -34,7 +35,7 @@ warn_unused_ignores = true
 disallow_untyped_defs = true
 
 [[tool.mypy.overrides]]
-module = ["spacy.*"]
+module = ["spacy.*", "pandas.*"]
 ignore_missing_imports = true
 
 [build-system]
