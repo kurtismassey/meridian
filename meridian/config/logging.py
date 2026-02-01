@@ -57,3 +57,6 @@ def get_logger(name: str) -> logging.Logger:
         Logger instance.
     """
     return logging.getLogger(name)
+
+
+setup_logging()
