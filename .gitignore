@@ -30,3 +30,7 @@ build/
 
 # Mypy
 .mypy_cache/
+
+meridian/services/extraction/data/cache/
+meridian/services/extraction/data/open_names.csv
+meridian/services/extraction/data/*.zip

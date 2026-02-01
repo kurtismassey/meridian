@@ -6,10 +6,7 @@ from spacy.language import Language
 from spacy.matcher import PhraseMatcher
 from spacy.tokens import Doc, Span
 
-from meridian.services.extraction.data.gazetteer import (
-    LOCAL_AUTHORITY_PHRASES,
-    REGION_PHRASES,
-)
+from meridian.services.extraction.gazetteer.loader import load_gazetteer
 from meridian.services.extraction.patterns.postcode import find_postcode_matches
 
 
@@ -48,10 +45,11 @@ def build_phrase_matcher(nlp: Language) -> PhraseMatcher:
         PhraseMatcher with LOCAL_AUTHORITY and REGION phrases.
     """
     matcher = PhraseMatcher(nlp.vocab, attr="LOWER")
-    for phrase in LOCAL_AUTHORITY_PHRASES:
-        matcher.add("LOCAL_AUTHORITY", [nlp.make_doc(phrase)])
-    for phrase in REGION_PHRASES:
-        matcher.add("REGION", [nlp.make_doc(phrase)])
+    gazetteer = load_gazetteer()
+    la_docs = list(nlp.pipe(row.name for row in gazetteer.local_authorities))
+    rgn_docs = list(nlp.pipe(row.name for row in gazetteer.regions))
+    matcher.add("LOCAL_AUTHORITY", la_docs)
+    matcher.add("REGION", rgn_docs)
     return matcher
 
 
