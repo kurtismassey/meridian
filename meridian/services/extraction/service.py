@@ -29,7 +29,8 @@ def _apply_matchers(doc: Doc, phrase_matcher: PhraseMatcher) -> Doc:
     Returns:
         Doc with entities set.
     """
-    spans = find_phrase_spans(doc, phrase_matcher)
+    spans = list(doc.ents)
+    spans.extend(find_phrase_spans(doc, phrase_matcher))
     spans.extend(find_postcode_spans(doc))
     doc.ents = merge_spans(spans)
     return doc

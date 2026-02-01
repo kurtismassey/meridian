@@ -1,4 +1,4 @@
-.PHONY: install dev lint typecheck test
+.PHONY: install dev lint typecheck test train evaluate
 
 install:
 	@echo "Installing dependencies..."
@@ -19,3 +19,11 @@ typecheck:
 test:
 	@echo "Running tests..."
 	@uv run pytest --cov=meridian --cov-report=term-missing
+
+train:
+	@echo "Training Meridian NER model..."
+	@uv run python -c "from meridian import Meridian; Meridian.train()"
+
+evaluate:
+	@echo "Evaluating Meridian NER model..."
+	@uv run python -c "from meridian import Meridian; Meridian.evaluate()"

@@ -21,7 +21,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Initialise."""
     setup_logging()
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
-    app.state.meridian = Meridian()
+    app.state.meridian = Meridian(model_path="models/meridian-ner")
     logger.info("Meridian API started")
     yield
     logger.info("Meridian API stopped")
